@@ -4,7 +4,6 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -16,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.purchaseOrders.api.domain.exception.EntityInUseException;
 import com.purchaseOrders.api.domain.exception.EntityNoFoundException;
 
 @ControllerAdvice
@@ -39,6 +39,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		
 		HttpStatus status = HttpStatus.NOT_FOUND;
 		ErrorType errorType = ErrorType.ENTITY_NOT_FOUND;
+		String detail = ex.getMessage();
+		
+		Error error = createErrorBuilder(status, errorType, detail).build();
+		
+		return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
+	}
+	/*--------------------------------------------------------------------------------------------------------------*/
+	@ExceptionHandler(EntityInUseException.class)
+	public ResponseEntity<?> HandleEntityInUseException(EntityInUseException ex, WebRequest request){
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		ErrorType errorType = ErrorType.ENTITY_IN_USE;
 		String detail = ex.getMessage();
 		
 		Error error = createErrorBuilder(status, errorType, detail).build();

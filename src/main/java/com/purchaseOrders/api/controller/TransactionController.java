@@ -39,12 +39,9 @@ public class TransactionController {
 	@GetMapping("/{transactionId}")
 	public ResponseEntity<Transaction> searchTransaction(@PathVariable Long transactionId){
 		
-		try {
-			Transaction transactionCurrent = service.searchTransaction(transactionId);
-			return ResponseEntity.status(HttpStatus.FOUND).body(transactionCurrent);
-		}catch (NoSuchElementException ex) {
-			throw new TransactionNotFoundException(transactionId);
-		}
+		Transaction transactionCurrent = service.searchTransaction(transactionId);
+		return ResponseEntity.status(HttpStatus.FOUND).body(transactionCurrent);
+		
 	}
 	
 	@PostMapping
@@ -56,12 +53,8 @@ public class TransactionController {
 	@DeleteMapping("/{transactionId}")
 	public ResponseEntity<Transaction> removeTransaction(@PathVariable Long transactionId){
 
-		try {
-			service.removeTransaction(transactionId);
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		}catch (NoSuchElementException ex) {
-			throw new TransactionNotFoundException(transactionId);
-		}
+		service.removeTransaction(transactionId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 	
 	@PutMapping("/{transactionId}")

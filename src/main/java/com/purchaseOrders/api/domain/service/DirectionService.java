@@ -5,7 +5,11 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import com.purchaseOrders.api.domain.exception.DirectionNotFoundException;
+import com.purchaseOrders.api.domain.exception.EntityInUseException;
 
 import com.purchaseOrders.api.domain.model.Direction;
 
@@ -25,9 +29,13 @@ public class DirectionService {
 	}
 	
 	public Direction searchDirection(Long directionId) {
-		Optional<Direction> directionCurrent = repository.findById(directionId);
+		try {
+			Optional<Direction> directionCurrent = repository.findById(directionId);
+			return directionCurrent.get();
+		}catch(NoSuchElementException ex) {
+			throw new DirectionNotFoundException(directionId);
+		}
 		
-		return directionCurrent.get();
 	}
 	
 	public Direction addDirection(Direction direction) {
@@ -35,20 +43,33 @@ public class DirectionService {
 	}
 	
 	public void removeDirection(Long directionId) {
-		Optional<Direction> directionCurrent = repository.findById(directionId);
-		
-		repository.delete(directionCurrent.get());
+		try {
+			Optional<Direction> directionCurrent = repository.findById(directionId);
+			
+			repository.delete(directionCurrent.get());
+			
+		}catch(DataIntegrityViolationException ex) {
+			throw new EntityInUseException(String.format("The code direction %s is in use.", directionId));
+		}catch (NoSuchElementException ex) {
+			throw new DirectionNotFoundException(directionId);
 		}
+	}
 	
 	public Direction updateDirection(Direction direction, Long directionId) {
 		Optional<Direction> directionCurrent = repository.findById(directionId);
 		
-		if(directionCurrent.isEmpty()) 
-		  { 
-			  throw new NoSuchElementException(); 
-		  }
-		  BeanUtils.copyProperties(direction, directionCurrent.get(), "id"); 
-		  
-		return repository.save(directionCurrent.get());
+		try {
+			if(directionCurrent.isEmpty()) 
+			  { 
+				  throw new NoSuchElementException(); 
+			  }
+			  BeanUtils.copyProperties(direction, directionCurrent.get(), "id"); 
+			  
+			return repository.save(directionCurrent.get());
+			
+		}catch (NoSuchElementException ex) {
+			throw new DirectionNotFoundException(directionId);
+		}
+		
 	}
 }

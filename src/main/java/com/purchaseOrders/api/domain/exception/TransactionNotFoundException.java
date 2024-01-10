@@ -7,6 +7,7 @@ public class TransactionNotFoundException extends EntityNoFoundException{
 	public TransactionNotFoundException(String message) {
 		super(message);
 		
+		
 	}
 
 	public TransactionNotFoundException(Long transactionId) {

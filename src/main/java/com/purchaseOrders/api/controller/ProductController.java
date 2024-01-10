@@ -1,7 +1,6 @@
 package com.purchaseOrders.api.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.purchaseOrders.api.domain.exception.ProductNotFoundException;
+
 import com.purchaseOrders.api.domain.model.Product;
 import com.purchaseOrders.api.domain.service.ProductService;
 
@@ -38,12 +37,9 @@ public class ProductController {
 	
 	@GetMapping("/{productId}")
 	public ResponseEntity<Product> searchProduct(@PathVariable Long productId){
-		try {
+		
 			Product productCurrent = service.searchProduct(productId);
 			return ResponseEntity.status(HttpStatus.FOUND).body(productCurrent);
-		}catch(NoSuchElementException ex) {
-			throw new ProductNotFoundException(productId);
-		}
 		
 	}
 	
@@ -55,23 +51,17 @@ public class ProductController {
 	
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<Product> removeProduct(@PathVariable Long productId){
-		try {
+		
 			service.removeProduct(productId);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		}catch (NoSuchElementException ex) {
-			throw new ProductNotFoundException(productId);
-		}
 		
 	}
 	
 	@PutMapping("/{productId}")
 	public ResponseEntity<Product> updateProduct(@RequestBody Product product, @PathVariable Long productId){
-		try {
+		
 			Product productSave  = service.updateProduct(product, productId);
 			return ResponseEntity.status(HttpStatus.OK).body(productSave);
-		}catch(NoSuchElementException ex) {
-			throw new ProductNotFoundException(productId);
-		}
 		
 	}
 	
