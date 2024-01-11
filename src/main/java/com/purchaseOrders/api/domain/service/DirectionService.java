@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,9 @@ import com.purchaseOrders.api.domain.repository.DirectionRepository;
 @Service
 public class DirectionService {
 
+	@Autowired
 	private DirectionRepository repository;
 	
-	public DirectionService(DirectionRepository repository){
-		this.repository = repository;
-	}
 	
 	public List<Direction> listDirections(){
 		return repository.findAll();

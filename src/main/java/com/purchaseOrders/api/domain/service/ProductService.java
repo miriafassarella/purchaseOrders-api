@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,9 @@ import com.purchaseOrders.api.domain.repository.ProductRepository;
 @Service
 public class ProductService {
 	
+	@Autowired
 	private ProductRepository repository;
 	
-	public ProductService(ProductRepository repository) {
-		this.repository = repository;
-	}
 
 	public List<Product> listProducts(){
 		return repository.findAll();

@@ -5,9 +5,11 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.purchaseOrders.api.domain.exception.BusinessException;
 import com.purchaseOrders.api.domain.exception.DirectionNotFoundException;
 import com.purchaseOrders.api.domain.exception.EntityNoFoundException;
 import com.purchaseOrders.api.domain.exception.ProductNotFoundException;
@@ -22,14 +24,12 @@ import com.purchaseOrders.api.domain.repository.TransactionRepository;
 @Service
 public class TransactionService {
 	
+	@Autowired
 	private TransactionRepository repository;
-	private ProductRepository productRepository;
-	private DirectionRepository directionRepository;
 	
-	public TransactionService(TransactionRepository repository) {
-		this.repository = repository;
-	}
-
+	@Autowired
+	private ProductRepository productRepository;
+		
 	public List<Transaction> listTransaction(){
 		return repository.findAll();
 	}
@@ -45,9 +45,23 @@ public class TransactionService {
 	}
 	/*--------------------------------------------------------------------------------------------*/
 	public Transaction addTransaction(Transaction transaction) {
+		Long productId = transaction.getProduct().getId();
+		Long directionId = transaction.getDirection().getId();
 		
-				return repository.save(transaction);	
+		Optional<Product> product = productRepository.findById(transaction.getProduct().getId());
 		
+		try {
+			if(product.isPresent()) {
+				return repository.save(transaction);
+			}else {
+				throw new BusinessException(String.format("Product code %s does not exist!", productId));
+			}
+			
+		}catch(DataIntegrityViolationException ex) {
+			
+			throw new BusinessException(String.format("Code direction %s does not exist!", directionId));
+			
+		}
 	}
 	/*----------------------------------------------------------------------------------------------*/
 	public void removeTransaction(Long transactionId) {
