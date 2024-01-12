@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.purchaseOrders.api.domain.exception.BusinessException;
 import com.purchaseOrders.api.domain.exception.EntityInUseException;
-import com.purchaseOrders.api.domain.exception.EntityNoFoundException;
-import com.purchaseOrders.api.domain.exception.ProductNotFoundException;
+
+
 import com.purchaseOrders.api.domain.exception.TransactionNotFoundException;
 import com.purchaseOrders.api.domain.model.Transaction;
 import com.purchaseOrders.api.domain.service.TransactionService;
@@ -71,6 +71,8 @@ public class TransactionController {
 			return ResponseEntity.status(HttpStatus.OK).body(transactionSave);
 		}catch (NoSuchElementException ex) {
 			throw new TransactionNotFoundException(transactionId);
+		}catch(BusinessException ex) {
+			throw new EntityInUseException(ex.getMessage());
 		}
 	}
 	

@@ -10,14 +10,12 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.purchaseOrders.api.domain.exception.BusinessException;
-import com.purchaseOrders.api.domain.exception.DirectionNotFoundException;
-import com.purchaseOrders.api.domain.exception.EntityNoFoundException;
-import com.purchaseOrders.api.domain.exception.ProductNotFoundException;
+
 import com.purchaseOrders.api.domain.exception.TransactionNotFoundException;
-import com.purchaseOrders.api.domain.model.Direction;
+
 import com.purchaseOrders.api.domain.model.Product;
 import com.purchaseOrders.api.domain.model.Transaction;
-import com.purchaseOrders.api.domain.repository.DirectionRepository;
+
 import com.purchaseOrders.api.domain.repository.ProductRepository;
 import com.purchaseOrders.api.domain.repository.TransactionRepository;
 
@@ -75,13 +73,23 @@ public class TransactionService {
 	
 	public Transaction updateTransaction(Transaction transaction, Long transactionId) {
 		Optional<Transaction> transactionCurrent = repository.findById(transactionId);
+		Optional<Product> product = productRepository.findById(transaction.getProduct().getId());
+		Long productId = transaction.getProduct().getId();
+		Long directionId = transaction.getDirection().getId();
 		
-		if(transactionCurrent.isEmpty()) 
-		  { 
-			  throw new NoSuchElementException(); 
-		  }
-		  BeanUtils.copyProperties(transaction, transactionCurrent.get(), "id"); 
-		  
-		return repository.save(transactionCurrent.get());
+		 try {
+			if(product.isPresent()) {
+				 BeanUtils.copyProperties(transaction, transactionCurrent.get(), "id"); 
+				  return repository.save(transactionCurrent.get());
+				
+			}else {
+				throw new BusinessException(String.format("Product code %s does not exist!", productId));
+			}
+			
+		}catch(DataIntegrityViolationException ex) {
+			
+			throw new BusinessException(String.format("Code direction %s does not exist!", directionId));
+			
+		}
 	}
 }
