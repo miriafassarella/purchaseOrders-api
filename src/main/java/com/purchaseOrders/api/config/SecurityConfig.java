@@ -18,7 +18,4 @@ public class SecurityConfig{
           .password("123").roles("USER");
     }
 
-    
-	
-	
-}
+   }
