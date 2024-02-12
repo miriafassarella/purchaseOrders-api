@@ -101,5 +101,5 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 				.title(errorType.getTitle())
 				.detail(detail);
 	}
-
-}
+	
+	}
